@@ -1,0 +1,7 @@
+[B]Version 0.9.1[/B]
+
+- Added fight library data caching mechanism
+
+[B]Version 0.9.0[/B]
+
+- Initial beta release of UFC Fight Pass.
