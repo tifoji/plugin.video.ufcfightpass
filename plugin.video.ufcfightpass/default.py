@@ -112,7 +112,7 @@ def publish_point(video):
 
 def get_categories():
     # Fetch the main UFC Fight Pass cat-a-ma-gories
-    url = 'https://www.ufc.tv'
+    url = 'https://www.ufc.tv/page/fightpass'
     #ua = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.87 Safari/537.36'
     ua = 'Mozilla/5.0 (iPad; CPU OS 8_3 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12F69'
 
@@ -128,21 +128,26 @@ def get_categories():
 
     s = requests.Session()
     s.cookies = cj
-    resp = s.get(url, headers=headers, verify=False)
+    resp = s.get(url, headers=headers, verify=True)
     html = resp.text
 
     results = []
-    #TODO: parsing html with regex is stupid - switch to BS4
-    pat = '<div id="fightPassMenu" class="menuColSubMenu">(.*?)<script>loadMainNav'
-    sub = re.compile(pat, re.DOTALL).search(html).group(0)
-
-    pat = '<div class="content">\s*<a href="(\/category\/[^"]+).*class="title">(.*)<\/a>'
-    for match in re.findall(pat, sub):
-        c = {
-            'title': match[1], 
-            'url': url + match[0]
-        }
-        results.append(c)
+    
+    soup = BeautifulSoup(html, 'html.parser')
+    
+    
+    for match in soup.findAll('a', {'class' : 'menu-link'}):
+        d = str(match['href'])
+        u = match['href']
+        
+        if 'ufc.tv' in d:
+        
+            c = {
+                'title': d.rsplit('/', 1)[-1],
+                'url' : u
+            }
+        
+            results.append(c)
 
     return results
 
