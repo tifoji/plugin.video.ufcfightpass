@@ -81,28 +81,27 @@ def publish_point(video):
     # Fetch the stream url for the video
     # TODO: if this fails, it may also be cause the cookie has expired / logged in on another device (status 400)
     #  * in this case, we may need to re-auth, so we can play the video
-    url = 'http://www.ufc.tv/service/publishpoint'
+    url = 'https://www.ufc.tv/service/publishpoint'
     headers = {
-        'User-Agent': 'Mozilla/5.0 (iPad; CPU OS 8_3 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12F69'
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0.1; D6603 Build/23.5.A.0.570; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36 android mobile ufc 6.1213'
     }
+
     payload = {
-        'id': video['id'], 
+        'id': video['id'],
         'type': 'video',
+        'nt': '1',
         'format': 'json'
     }
 
-    # load in cookie data -- TODO: create a helper for this??
     cj = cookielib.LWPCookieJar(COOKIE_FILE)
     try:
         cj.load(COOKIE_FILE, ignore_discard=True)
     except:
         pass
 
-    # {"path":"http://nlds253.cdnak.neulion.com/nlds_vod/ufc/vod/2016/03/06/dana-white-lookin-for-a-fight-ep3-_neulion5000/dana-white-lookin-for-a-fight-ep3-_neulion5000_1_ipad.mp4.m3u8?nltid=ufc&nltdt=6&uid=2620455&cors=https%3A%2F%2Fwww.ufc.tv&hdnea=expires%3D1458512501%7Eaccess%3D%2Fnlds_vod%2Fufc%2Fvod%2F2016%2F03%2F06%2Fdana-white-lookin-for-a-fight-ep3-_neulion5000%2F*%7Emd5%3D2a5e1e91a2f2fcd1368b5c1e3a2d641e"}
-
     s = requests.Session()
     s.cookies = cj
-    resp = s.post(url, data=payload, headers=headers)
+    resp = s.post(url, data=payload, headers=headers, verify=False)
     # normally status 400 if have an expired session
     status = resp.status_code
     result = resp.json()
